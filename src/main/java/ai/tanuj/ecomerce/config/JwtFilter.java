@@ -1,3 +1,4 @@
+//Stands at the front door. He ignores your password and only looks for the Token in the header.
 package ai.tanuj.ecomerce.config;
 
 import org.springframework.beans.factory.annotation.Autowired;

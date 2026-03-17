@@ -1,5 +1,5 @@
+//Prints the "Passport" (Token). It's the only one that knows the Secret Key.
 package ai.tanuj.ecomerce.config;
-
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
