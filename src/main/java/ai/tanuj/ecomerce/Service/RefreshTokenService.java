@@ -1,13 +1,12 @@
 package ai.tanuj.ecomerce.Service;
 import ai.tanuj.ecomerce.Entity.RefreshToken;
-import ai.tanuj.ecomerce.Model.TokenRefreshRequest;
+import ai.tanuj.ecomerce.Entity.UserEntity;
 import ai.tanuj.ecomerce.Repository.RefreshTokenRepository; 
 import ai.tanuj.ecomerce.Repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.sql.Ref;
+import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.Optional;
@@ -20,15 +19,21 @@ public class RefreshTokenService {
     @Autowired
     private UserRepository userRepository;
     // 1. CREATE: Generate a 7-day token for a user
-    public RefreshToken createRefreshToken(String email) {
-        RefreshToken refreshToken = new RefreshToken();
+    @Transactional
+public RefreshToken createRefreshToken(String email) {
+    UserEntity user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
 
-        refreshToken.setUser(userRepository.findByEmail(email).get());
-        refreshToken.setExpiryDate(Instant.now().plusMillis(604800000)); // 7 Days
-        refreshToken.setToken(UUID.randomUUID().toString());
+    RefreshToken refreshToken = refreshTokenRepository.findByUser(user)
+            .orElse(new RefreshToken()); // If not found, create new object
 
-        return refreshTokenRepository.save(refreshToken);
-    }
+    // 2. Update the fields (this works for both NEW and EXISTING tokens)
+    refreshToken.setUser(user);
+    refreshToken.setToken(UUID.randomUUID().toString());
+    refreshToken.setExpiryDate(Instant.now().plusMillis(604800000)); // 7 days
+
+    return refreshTokenRepository.save(refreshToken);
+}
 
     // 2. VERIFY: Check if the token has expired
     public RefreshToken verifyExpiration(RefreshToken token) {

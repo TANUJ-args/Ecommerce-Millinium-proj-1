@@ -40,18 +40,22 @@ public class AuthController {
 
     @PostMapping("/login")
 public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-    // 1. Authenticate the user
     Authentication authentication = authManager.authenticate(
-        new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
     );
 
-    // 2. Generate Access Token (JWT)
-    String accessToken = jwtUtil.generateToken(request.getEmail(), "ADMIN");
+    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    
+    // 1. Check if the user has any roles/authorities
+    if (userDetails.getAuthorities().isEmpty()) {
+        throw new RuntimeException("Access Denied: User has no assigned roles.");
+    }
 
-    // 3. THE FIX: Generate AND Save the Refresh Token to MySQL
+    String role = userDetails.getAuthorities().toArray()[0].toString();
+    
+    String accessToken = jwtUtil.generateToken(request.getEmail(), role);
     RefreshToken refreshToken = refreshTokenService.createRefreshToken(request.getEmail());
 
-    // 4. Return both as a JSON object
     return ResponseEntity.ok(new TokenResponse(accessToken, refreshToken.getToken()));
 }
 
