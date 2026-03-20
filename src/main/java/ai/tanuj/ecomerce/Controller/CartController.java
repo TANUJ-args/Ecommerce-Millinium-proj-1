@@ -10,12 +10,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ai.tanuj.ecomerce.Model.CartResponse;
 import ai.tanuj.ecomerce.Service.CartService;
+import ai.tanuj.ecomerce.Service.OrderService;
+
 @RestController
 @RequestMapping("/api/cart")
 public class CartController {
 
     @Autowired
     private CartService cartService;
+
+    @Autowired
+    private OrderService orderService;
 
     // POST: http://localhost:8080/api/cart/add?productId=1&quantity=2
     @PostMapping("/add")
@@ -33,4 +38,11 @@ public class CartController {
     public ResponseEntity<CartResponse> getMyCart(Authentication auth) {
         return ResponseEntity.ok(cartService.getCartForUser(auth.getName()));
     }
+
+    @PostMapping("/checkout")
+    public ResponseEntity<String> placeOrder(Authentication auth) {
+        String response = orderService.checkout(auth.getName());
+        return ResponseEntity.ok(response);
+    }
+    
 }
