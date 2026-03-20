@@ -1,4 +1,6 @@
 package ai.tanuj.ecomerce.Controller;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ai.tanuj.ecomerce.Model.CartResponse;
+import ai.tanuj.ecomerce.Model.OrderResponse;
 import ai.tanuj.ecomerce.Service.CartService;
 import ai.tanuj.ecomerce.Service.OrderService;
 
@@ -43,6 +46,12 @@ public class CartController {
     public ResponseEntity<String> placeOrder(Authentication auth) {
         String response = orderService.checkout(auth.getName());
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/my-history")
+    public ResponseEntity<List<OrderResponse>> getMyOrderHistory(Authentication auth) {
+        List<OrderResponse> history = orderService.getOrderHistory(auth.getName());
+        return ResponseEntity.ok(history);
     }
     
 }

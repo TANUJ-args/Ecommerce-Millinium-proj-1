@@ -10,5 +10,5 @@ public class OrderResponse {
     private Double totalAmount;
     private String status;
     private LocalDateTime dateCreated;
-    private List<CartItemDTO> items; // We can reuse a similar DTO structure here
+    private List<OrderItemDTO> items; // We can reuse a similar DTO structure here
 }

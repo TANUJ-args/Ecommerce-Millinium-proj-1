@@ -67,31 +67,31 @@ public class CartServiceImpl implements CartService {
     }
     
     public CartResponse getCartForUser(String email) {
-    // 1. Find the User
-    UserEntity user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+        // 1. Find the User
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-    // 2. Get the ugly Entities from DB
-    List<CartItem> cartItems = cartRepository.findByUser(user);
+        // 2. Get the ugly Entities from DB
+        List<CartItem> cartItems = cartRepository.findByUser(user);
 
-    // 3. Map Entities to DTOs (The Cleanup)
-    List<CartItemDTO> dtoList = cartItems.stream().map(item -> {
-        CartItemDTO dto = new CartItemDTO();
-        dto.setProductId(item.getProduct().getId());
-        dto.setProductName(item.getProduct().getName());
-        dto.setProductDescription(item.getProduct().getDescription());
-        dto.setUnitPrice(item.getProduct().getPrice());
-        dto.setQuantity(item.getQuantity());
-        dto.setSubTotal(item.getSubTotal()); // Using the helper method from the Entity
-        return dto;
-    }).toList();
+        // 3. Map Entities to DTOs (The Cleanup)
+        List<CartItemDTO> dtoList = cartItems.stream().map(item -> {
+            CartItemDTO dto = new CartItemDTO();
+            dto.setProductId(item.getProduct().getId());
+            dto.setProductName(item.getProduct().getName());
+            dto.setProductDescription(item.getProduct().getDescription());
+            dto.setUnitPrice(item.getProduct().getPrice());
+            dto.setQuantity(item.getQuantity());
+            dto.setSubTotal(item.getSubTotal()); // Using the helper method from the Entity
+            return dto;
+        }).toList();
 
-    // 4. Calculate Grand Total
-    Double grandTotal = dtoList.stream()
-            .mapToDouble(CartItemDTO::getSubTotal)
-            .sum();
+        // 4. Calculate Grand Total
+        Double grandTotal = dtoList.stream()
+                .mapToDouble(CartItemDTO::getSubTotal)
+                .sum();
 
-    return new CartResponse(dtoList, grandTotal);
+        return new CartResponse(dtoList, grandTotal);
 }
 }
     

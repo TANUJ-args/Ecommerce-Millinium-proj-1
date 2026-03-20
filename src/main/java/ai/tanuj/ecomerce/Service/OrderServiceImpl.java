@@ -3,6 +3,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,8 @@ import ai.tanuj.ecomerce.Entity.OrderEntity;
 import ai.tanuj.ecomerce.Entity.OrderItem;
 import ai.tanuj.ecomerce.Entity.ProductEntity;
 import ai.tanuj.ecomerce.Entity.UserEntity;
+import ai.tanuj.ecomerce.Model.OrderItemDTO;
+import ai.tanuj.ecomerce.Model.OrderResponse;
 @Service
 public class OrderServiceImpl implements OrderService {
 
@@ -78,5 +81,34 @@ public class OrderServiceImpl implements OrderService {
         cartRepository.deleteByUser(user);
 
         return "Order Placed! Your Tracking ID is: " + order.getOrderTrackingNumber();
+    }
+
+    @Override
+    public List<OrderResponse> getOrderHistory(String email) {
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<OrderEntity> orders = orderRepository.findByUserOrderByDateCreatedDesc(user);
+
+        return orders.stream().map(order -> {
+            OrderResponse res = new OrderResponse();
+            res.setId(order.getId());
+            res.setTrackingNumber(order.getOrderTrackingNumber());
+            res.setTotalAmount(order.getTotalAmount());
+            res.setStatus(order.getStatus());
+            res.setDateCreated(order.getDateCreated());
+            
+            // Map items inside the order
+            List<OrderItemDTO> itemDtos = order.getOrderItems().stream().map(item -> {
+                OrderItemDTO dto = new OrderItemDTO();
+                dto.setProductName(item.getProduct().getName());
+                dto.setQuantity(item.getQuantity());
+                dto.setPriceAtPurchase(item.getPriceAtPurchase());
+                return dto;
+            }).collect(Collectors.toList());
+            
+            res.setItems(itemDtos);
+            return res;
+        }).collect(Collectors.toList());
     }
 }
