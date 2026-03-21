@@ -4,17 +4,23 @@ import Login from "./Components/Login"; // We will create this next!
 import Navbar from "./Components/Navbar"; // This is our navigation bar that shows on every page
 import Products from "./Components/Products"; // This is our main page with products
 import Cart from "./Components/Cart"; // This is our shopping cart page
+import AdminPanel from "./Components/AdminPanel"; // This is our admin page to read users
+import AddProducts from "./Components/VendorPanel"; // This is our vendor page to add products
 function App() {
   return (
     <BrowserRouter>
       <Navbar />
       <Routes>
         {/* The Default Page */}
-        <Route path="/" element={<Products/>} />
+        <Route path="/" element={<Products />} />
         {/* The Login Page */}
         <Route path="/login" element={<Login />} />
         {/* The Cart Page */}
         <Route path="/cart" element={<Cart />} />
+        {/* The Admin Page */}
+        <Route path="/admin" element={<AdminPanel />} />
+        {/* The Vendor Page */}
+        <Route path="/vendor" element={<AddProducts />} />
       </Routes>
     </BrowserRouter>
   );
