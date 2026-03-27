@@ -23,7 +23,6 @@ function AdminPanel() {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 
-                console.log(response.data);
                 setUsers(response.data);
             }
 

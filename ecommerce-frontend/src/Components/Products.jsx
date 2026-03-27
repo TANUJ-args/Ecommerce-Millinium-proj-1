@@ -1,35 +1,38 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import api from "../axiosConfig"; // <-- Using your new Interceptor!
 
 function Products() {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
+
   useEffect(() => {
-    fetch("http://localhost:8080/api/products/all")
-      .then((response) => response.json())
-      .then((data) => setProducts(data))
-      .catch((error) => console.error("Error fetching data:", error));
+    fetchProducts();
   }, []);
 
-  const handleAddToCart = async (productId) => {
-    const token = localStorage.getItem("token");
+  const fetchProducts = async () => {
+    try {
+      // Clean GET request! The base URL is already handled by the interceptor.
+      // Note: Adjust the endpoint if your Java controller uses just '/api/products'
+      const response = await api.get("/api/products/all");
+      setProducts(response.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
 
+  const handleAddToCart = async (productId) => {
+    // We still check if they are logged in so we can bounce them to the login page if not
+    const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login");
       return;
     }
 
     try {
-      // THE MISSING ENGINE: Actually sending the data to Java!
-      const response = await axios.post(
-        `http://localhost:8080/api/cart/add?productId=${productId}&quantity=1`,
-        {}, // Empty body because we are using Query Parameters
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
+      // Clean POST request! The interceptor securely attaches the JWT token automatically.
+      const response = await api.post(
+        `/api/cart/add?productId=${productId}&quantity=1`,
       );
 
       console.log("Server response:", response.data);
@@ -47,46 +50,47 @@ function Products() {
 
   return (
     <div className="container mt-5">
-      <h2 className="mb-4">Our Products</h2>
+      <h2 className="mb-4 fw-bold">Vizag Gear Hub - Products</h2>
 
-      {/* d-flex and flex-wrap puts the cards side-by-side instead of in one giant vertical line */}
       <div className="d-flex flex-wrap gap-4">
         {products.map((product) => (
-          /* --- YOUR BOOTSTRAP CARD STARTS HERE --- */
-          <div className="card" style={{ width: "18rem" }} key={product.id}>
-            {/* Placeholder image generator that writes the product name on the image */}
+          <div
+            className="card shadow-sm"
+            style={{ width: "18rem" }}
+            key={product.id}
+          >
+            {/* Placeholder Image */}
             <img
               src={`https://via.placeholder.com/300x200?text=${encodeURIComponent(product.name)}`}
               className="card-img-top"
               alt={product.name}
             />
 
-            <div className="card-body">
-              {/* Product Name */}
-              <h5 className="card-title">{product.name}</h5>
+            <div className="card-body d-flex flex-column">
+              <h5 className="card-title fw-bold">{product.name}</h5>
+              <p className="card-text text-truncate text-muted">
+                {product.description}
+              </p>
 
-              {/* Product Description */}
-              <p className="card-text text-truncate">{product.description}</p>
-
-              {/* Price and Stock */}
-              <div className="d-flex justify-content-between align-items-center mb-3">
+              {/* mt-auto pushes the price and button to the bottom so all cards are equal height */}
+              <div className="d-flex justify-content-between align-items-center mb-3 mt-auto">
                 <span className="fs-5 fw-bold text-success">
                   ₹{product.price}
                 </span>
                 <span className="badge bg-secondary">
-                  Stock: {product.stockQuantity}
+                  {/* Fallback to 0 if stock is undefined */}
+                  Stock: {product.stockQuantity || product.stock || 0}
                 </span>
               </div>
 
               <button
-                className="btn btn-primary w-100"
+                className="btn btn-primary w-100 fw-bold shadow-sm"
                 onClick={() => handleAddToCart(product.id)}
               >
                 Add to Cart
               </button>
             </div>
           </div>
-          /* --- YOUR BOOTSTRAP CARD ENDS HERE --- */
         ))}
       </div>
     </div>
