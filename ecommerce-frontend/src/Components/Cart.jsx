@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import api from "../axiosConfig"; 
 function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,16 +50,11 @@ function Cart() {
   }, []);
 
   const fetchCart = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
+   
 
     try {
-      const response = await axios.get("http://localhost:8080/api/cart", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // THE NEW WAY (DRY Code)
+      const response = await api.get('/api/cart');
 
       console.log("Raw Cart Data from Java:", response.data);
 

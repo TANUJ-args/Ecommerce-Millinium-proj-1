@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import api from '../axiosConfig';
 function AddProduct() {
   // 1. THE MEMORY: Buckets for what the user types
   const [name, setName] = useState("");
@@ -16,12 +16,6 @@ function AddProduct() {
     // CRITICAL: This stops the browser from refreshing the page!
     e.preventDefault();
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("You need to be logged in to add products.");
-      return;
-    }
-
     // Pack the JSON box exactly how Java expects it
     const newProduct = {
       name: name,
@@ -29,20 +23,12 @@ function AddProduct() {
       price: parseFloat(price), // Convert the text input to a decimal number
       stockQuantity: parseInt(stock), // Convert text to a whole number
     };
-
+ 
     try {
-      // Send the POST request.
-      // Notice how 'newProduct' goes in the middle, before the headers!
-      // NOTE: Make sure this URL matches your Java endpoint for adding products
-      const response = await axios.post(
-        "http://localhost:8080/api/vendor/addproduct",
-        newProduct,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-
+      // Send the POST request. with newproducts 
+      const response = await api.post("/api/vendor/addproduct", newProduct);
       console.log("Saved Product:", response.data);
+      
       alert("Product added successfully!");
 
       // Teleport back to the dashboard so you can see your new item
