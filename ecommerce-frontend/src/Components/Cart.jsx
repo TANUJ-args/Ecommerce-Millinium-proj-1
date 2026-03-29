@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import api from "../axiosConfig"; 
+import api from "../axiosConfig";
 function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,11 +50,9 @@ function Cart() {
   }, []);
 
   const fetchCart = async () => {
-   
-
     try {
       // THE NEW WAY (DRY Code)
-      const response = await api.get('/api/cart');
+      const response = await api.get("/api/cart");
 
       console.log("Raw Cart Data from Java:", response.data);
 
@@ -81,6 +79,20 @@ function Cart() {
   };
 
   if (loading) return <div className="container mt-5">Loading cart...</div>;
+
+  //--checkout logic---
+  const handleCheckout = async () => {
+    try {
+      const response = await api.post("/api/cart/checkout");
+      console.log("Order Placed:", response.data);
+      alert("Checkout successful! Your order has been placed.");
+      setCartItems([]);
+      navigate("/");
+    } catch (error) {
+      console.error("Checkout failed:", error);
+      alert("Failed to process checkout. Please try again.");
+    }
+  };
 
   return (
     <div className="container mt-5">
@@ -114,7 +126,10 @@ function Cart() {
               Grand Total:{" "}
               <span className="text-success">₹{calculateTotal()}</span>
             </h4>
-            <button className="btn btn-success btn-lg">
+            <button
+              className="btn btn-success btn-lg shadow-sm fw-bold"
+              onClick={handleCheckout}
+            >
               Proceed to Checkout
             </button>
           </div>

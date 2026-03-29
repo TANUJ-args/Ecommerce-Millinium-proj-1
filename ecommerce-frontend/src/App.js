@@ -6,21 +6,43 @@ import Products from "./Components/Products"; // This is our main page with prod
 import Cart from "./Components/Cart"; // This is our shopping cart page
 import AdminPanel from "./Components/AdminPanel"; // This is our admin page to read users
 import AddProducts from "./Components/VendorPanel"; // This is our vendor page to add products
+import ProtectedRoute from "./Components/ProtectedRoute"; //protected route for all pages for more security
 function App() {
   return (
     <BrowserRouter>
       <Navbar />
       <Routes>
         {/* The Default Page */}
-        <Route path="/" element={<Products />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Products />
+            </ProtectedRoute>
+          }
+        />
         {/* The Login Page */}
         <Route path="/login" element={<Login />} />
         {/* The Cart Page */}
         <Route path="/cart" element={<Cart />} />
         {/* The Admin Page */}
-        <Route path="/admin" element={<AdminPanel />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminPanel />
+            </ProtectedRoute>
+          }
+        />
         {/* The Vendor Page */}
-        <Route path="/vendor" element={<AddProducts />} />
+        <Route
+          path="/vendor"
+          element={
+            <ProtectedRoute>
+              <AddProducts />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
