@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,6 +27,9 @@ public class ProductEntity {
 
     @Column(nullable = false)
     private String name;
+    
+    @Version
+    private Long version;
 
     @Column(columnDefinition = "TEXT") // Good for long descriptions
     private String description;
