@@ -54,7 +54,7 @@ public class OrderServiceImpl implements OrderService {
 
             // Double Check Stock
             if (product.getStockQuantity() < cartItem.getQuantity()) {
-                throw new RuntimeException("Stock ran out for: " + product.getName());
+                throw new IllegalStateException("Stock ran out for: " + product.getName());
             }
 
             // Decrease Stock in Database
