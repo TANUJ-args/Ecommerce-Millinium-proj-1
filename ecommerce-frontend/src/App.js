@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Register from "./Components/Register";
 import Login from "./Components/Login"; // We will create this next!
 import Navbar from "./Components/Navbar"; // This is our navigation bar that shows on every page
 import Products from "./Components/Products"; // This is our main page with products
@@ -21,6 +22,8 @@ function App() {
             </ProtectedRoute>
           }
         />
+        {/* The Register Page */}
+        <Route path="/register" element={<Register />} />
         {/* The Login Page */}
         <Route path="/login" element={<Login />} />
         {/* The Cart Page */}

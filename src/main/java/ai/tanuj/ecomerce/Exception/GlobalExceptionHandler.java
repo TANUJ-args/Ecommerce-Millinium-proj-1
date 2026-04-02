@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
     // This catches general runtime errors (like "Vendor not found")
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     // This catches state conflicts like out-of-stock

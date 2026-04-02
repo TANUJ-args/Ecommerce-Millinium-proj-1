@@ -29,7 +29,8 @@ public class ProductEntity {
     private String name;
     
     @Version
-    private Long version;
+    @Column(nullable = false, columnDefinition = "bigint default 0")
+    private Long version = 0L;
 
     @Column(columnDefinition = "TEXT") // Good for long descriptions
     private String description;

@@ -2,27 +2,33 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-function Login() {
+function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate(); // The React Teleporter
+  const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
+    setError("");
     try {
-      const response = await axios.post("http://localhost:8080/auth/login", {
+      await axios.post("http://localhost:8080/auth/register", {
         email: email,
         password: password,
+        role: role,
       });
 
-      // Save the VIP Pass
-      localStorage.setItem("token", response.data.accessToken);
-
-      // Teleport the user back to the Dashboard!
-      navigate("/");
+      navigate("/login");
     } catch (err) {
-      setError("Invalid email or password");
+      const responseBody = err?.response?.data;
+      const serverMessage =
+        (typeof responseBody === "string" && responseBody) ||
+        responseBody?.message ||
+        responseBody?.error ||
+        err?.message;
+
+      setError(serverMessage || "Server error");
     }
   };
 
@@ -30,11 +36,9 @@ function Login() {
     <div className="container mt-5" style={{ maxWidth: "400px" }}>
       <div className="card shadow-sm">
         <div className="card-body">
-          <h3 className="card-title text-center mb-4">Login</h3>
+          <h3 className="card-title text-center mb-4">Register</h3>
 
-          {error && <div className="alert alert-danger">{error}</div>}
-
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleRegister}>
             <div className="mb-3">
               <label className="form-label">Email</label>
               <input
@@ -55,12 +59,25 @@ function Login() {
                 required
               />
             </div>
+            <div className="mb-4">
+              <label className="form-label">Role</label>
+              <input
+                type="text"
+                className="form-control"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                required
+              />
+            </div>
             <button type="submit" className="btn btn-primary w-100 fw-bold">
-              Sign In
+              Register
             </button>
-            <a className="btn btn-link w-100" href="/register">
-              Don't have an account? Sign Up
+            <a className="btn btn-link w-100" href="/login">
+              Now login with those credentials
             </a>
+            
+            {error && <div className="alert alert-danger">{error}</div>}
+
           </form>
         </div>
       </div>
@@ -68,4 +85,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Register;

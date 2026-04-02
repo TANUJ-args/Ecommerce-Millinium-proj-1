@@ -90,7 +90,14 @@ function Cart() {
       navigate("/");
     } catch (error) {
       console.error("Checkout failed:", error);
-      alert("Failed to process checkout. Please try again.");
+      const responseBody = error?.response?.data;
+      const serverMessage =
+        (typeof responseBody === "string" && responseBody) ||
+        responseBody?.message ||
+        responseBody?.error ||
+        error?.message;
+
+      alert(serverMessage || "Failed to process checkout. Please try again.");
     }
   };
 
